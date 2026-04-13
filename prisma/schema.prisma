@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum IndustryVertical {
+  FINANCIAL_SERVICES
+  INSURANCE
+  CONSULTING
+  TECH
+  OTHER
+}
+
+enum GTMModel {
+  DIRECT_SALES
+  CHANNEL
+  CONSULTING_LED
+  PRODUCT_LED
+  OTHER
+}
+
+enum PartnershipType {
+  RESELLER
+  REFERRAL
+  BUILD
+  INTEGRATE
+  CO_SELL
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  COMPLETE
+  FAILED
+}
+
+model Company {
+  id               String           @id @default(cuid())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  name             String
+  website          String
+  industry         IndustryVertical
+  employeeCount    Int
+  aiMaturityLevel  Int
+  capabilities     String
+  clientBase       String
+  gtmModel         GTMModel
+  partnershipGoals String
+  contactEmail     String
+  reports          MatchReport[]
+}
+
+model Vendor {
+  id                  String             @id @default(cuid())
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  name                String
+  slug                String             @unique
+  website             String
+  description         String
+  partnershipTypes    PartnershipType[]
+  targetIndustries    IndustryVertical[]
+  idealPartnerProfile Json
+  minimumRequirements Json
+  featured            Boolean            @default(false)
+  reports             MatchReport[]
+}
+
+model MatchReport {
+  id               String       @id @default(cuid())
+  createdAt        DateTime     @default(now())
+  companyId        String
+  company          Company      @relation(fields: [companyId], references: [id])
+  overallScore     Int          @default(0)
+  status           ReportStatus @default(PENDING)
+  reportData       Json?
+  inputTokens      Int?
+  outputTokens     Int?
+  cacheReadTokens  Int?
+  cacheWriteTokens Int?
+  vendors          Vendor[]
+}

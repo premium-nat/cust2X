@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma"
 import { generateReport } from "@/lib/matching-engine"
 import { VENDOR_PROFILES } from "@/lib/vendor-profiles"
+import { getAnthropicKey } from "@/lib/config"
 import type { CompanyProfileInput } from "@/lib/types"
 
 const MatchRequestSchema = z.object({
@@ -50,6 +51,15 @@ export async function POST(request: NextRequest) {
 
   const input = parsed.data as CompanyProfileInput
 
+  // Check API key is configured
+  const apiKey = await getAnthropicKey()
+  if (!apiKey) {
+    return Response.json(
+      { error: "API key not configured", setupRequired: true },
+      { status: 503 }
+    )
+  }
+
   // Create Company record
   const company = await prisma.company.create({
     data: {
@@ -77,7 +87,7 @@ export async function POST(request: NextRequest) {
 
   // Run AI matching engine
   try {
-    const result = await generateReport(input, VENDOR_PROFILES)
+    const result = await generateReport(input, VENDOR_PROFILES, apiKey)
 
     // Find vendor records for the matched vendors
     const matchedSlugs = result.report.topMatches.map((m) => m.vendorSlug)

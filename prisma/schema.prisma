@@ -70,6 +70,12 @@ model Vendor {
   reports             MatchReport[]
 }
 
+model Config {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model MatchReport {
   id               String       @id @default(cuid())
   createdAt        DateTime     @default(now())

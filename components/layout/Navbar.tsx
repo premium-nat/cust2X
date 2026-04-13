@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Zap } from "lucide-react"
+import { Zap, KeyRound } from "lucide-react"
 
 export function Navbar() {
   return (
@@ -26,6 +26,13 @@ export function Navbar() {
               className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
             >
               Get Matched
+            </Link>
+            <Link
+              href="/setup"
+              className="text-sm font-medium text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+            >
+              <KeyRound className="h-3.5 w-3.5" />
+              API Key
             </Link>
           </nav>
 

@@ -131,6 +131,10 @@ export function ProfileWizard() {
       const result = await response.json()
 
       if (!response.ok) {
+        if (result.setupRequired) {
+          router.push("/setup")
+          return
+        }
         throw new Error(result.error ?? "Failed to generate report")
       }
 

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { anthropic } from "./anthropic"
+import Anthropic from "@anthropic-ai/sdk"
 import type { CompanyProfileInput, ReportData, VendorProfile } from "./types"
 import { INDUSTRY_LABELS, GTM_LABELS, AI_MATURITY_LABELS } from "./types"
 
@@ -124,8 +124,10 @@ export interface MatchResult {
 
 export async function generateReport(
   company: CompanyProfileInput,
-  vendors: VendorProfile[]
+  vendors: VendorProfile[],
+  apiKey: string
 ): Promise<MatchResult> {
+  const client = new Anthropic({ apiKey })
   const systemBlocks = buildSystemBlocks(vendors)
   const userPrompt = buildCompanyPrompt(company)
 
@@ -139,7 +141,7 @@ export async function generateReport(
       },
     ]
 
-    const response = await anthropic.messages.create({
+    const response = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
       system: systemBlocks,
